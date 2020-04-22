@@ -80,8 +80,8 @@ s_NeoPixel_t *s_debug;
 e_NeoPixel_status_t e_NeoPixel_init(uint16_t u16_num, e_NeoPixel_Type_t e_type, s_NeoPixel_t **spp_head,s_NeoPixel_buffer_t *sp_buffer);
 e_NeoPixel_status_t e_NeoPixel_write(s_NeoPixel_t *sp_head, s_NeoPixel_buffer_t *s_buffer);
 e_NeoPixel_status_t e_NeoPixel_deinit(s_NeoPixel_t *sp_NeoPixel);
-e_NeoPixel_status_t e_NeoPixel_fadePixel(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS]);
-e_NeoPixel_status_t e_NeoPixel_fadeChain(s_NeoPixel_t *sp_NeoPixel_head, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS]);
+e_NeoPixel_status_t e_NeoPixel_fadePixel(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS], uint8_t u8_Step);
+e_NeoPixel_status_t e_NeoPixel_fadeChain(s_NeoPixel_t *sp_NeoPixel_head, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS], uint8_t u8_Step);
 e_NeoPixel_status_t e_NeoPixel_SetAll(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS]);
 
 #endif /* NEOPIXEL_H_ */

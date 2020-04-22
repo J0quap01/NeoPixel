@@ -230,21 +230,32 @@ e_NeoPixel_status_t e_NeoPixel_deinit(s_NeoPixel_t *sp_NeoPixel){
   * @brief  fades pixel up/down to a specific value, repeated call (for example timer interrupt) changes value
   * @param  sp_NeoPixel		pointer to pixel to change
   *         u8_dest_Color	array containing destination color
+  *         u8_Step			step to increment
   * @retval e_NeoPixel_status_t:	OK if destination color value reched otherwise BUSY
   */
-e_NeoPixel_status_t e_NeoPixel_fadePixel(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS]){
+e_NeoPixel_status_t e_NeoPixel_fadePixel(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS], uint8_t u8_Step){
 	e_NeoPixel_status_t e_status = e_NeoPixel_OK;
 	static uint8_t *u8_Color;
 
 	if((u8_dest_Color != NULL) | (u8_Color == NULL)){
 		u8_Color = u8_dest_Color;
 	}
-	for(int i = 0; i < NEOPIXEL_MAX_COLORS; i++){
+	for(uint64_t i = 0; i < NEOPIXEL_MAX_COLORS; i++){
 		if(sp_NeoPixel->u8_colors[i] < u8_Color[i]){
-			sp_NeoPixel->u8_colors[i]++;
+			if(u8_Step > u8_Color[i] - sp_NeoPixel->u8_colors[i]){
+				sp_NeoPixel->u8_colors[i] = u8_Color[i];
+			}
+			else {
+				sp_NeoPixel->u8_colors[i] += u8_Step;
+			}
 			e_status = e_NeoPixel_BUSY;
 		} else if(sp_NeoPixel->u8_colors[i] > u8_Color[i]){
-			sp_NeoPixel->u8_colors[i]--;
+			if(u8_Step > sp_NeoPixel->u8_colors[i] - u8_Color[i]){
+				sp_NeoPixel->u8_colors[i] = u8_Color[i];
+			}
+			else {
+				sp_NeoPixel->u8_colors[i] -= u8_Step;
+			}
 			e_status = e_NeoPixel_BUSY;
 		}
 	}
@@ -256,16 +267,17 @@ e_NeoPixel_status_t e_NeoPixel_fadePixel(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_d
   * @brief  fades chain up/down to a specific value, repeated call (for example timer interrupt) changes value
   * @param  sp_NeoPixel		pointer to head of chain
   *         u8_dest_Color	array containing destination color
+  *         u8_Step			step to increment
   * @retval e_NeoPixel_status_t:	OK if whole chain finished otherwise BUSY
   */
-e_NeoPixel_status_t e_NeoPixel_fadeChain(s_NeoPixel_t *sp_NeoPixel_head, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS]){
+e_NeoPixel_status_t e_NeoPixel_fadeChain(s_NeoPixel_t *sp_NeoPixel_head, uint8_t u8_dest_Color[NEOPIXEL_MAX_COLORS], uint8_t u8_Step){
 	static s_NeoPixel_t *sp_NeoPixel;
 
 	if(sp_NeoPixel == NULL){
 		sp_NeoPixel = sp_NeoPixel_head->sp_NeoPixel_next;
 	}
 
-	if(e_NeoPixel_fadePixel(sp_NeoPixel, u8_dest_Color) == e_NeoPixel_OK){
+	if(e_NeoPixel_fadePixel(sp_NeoPixel, u8_dest_Color, u8_Step) == e_NeoPixel_OK){
 		sp_NeoPixel = sp_NeoPixel->sp_NeoPixel_next;
 
 		if(sp_NeoPixel == NULL){
@@ -284,7 +296,7 @@ e_NeoPixel_status_t e_NeoPixel_fadeChain(s_NeoPixel_t *sp_NeoPixel_head, uint8_t
   */
 e_NeoPixel_status_t e_NeoPixel_SetAll(s_NeoPixel_t *sp_NeoPixel, uint8_t u8_Color[NEOPIXEL_MAX_COLORS]){
 	while (sp_NeoPixel != NULL){
-		for(int i = 0; i < NEOPIXEL_MAX_COLORS; i++){
+		for(uint64_t i = 0; i < NEOPIXEL_MAX_COLORS; i++){
 			sp_NeoPixel->u8_colors[i] = u8_Color[i];
 		}
 
